@@ -20,7 +20,7 @@ static const char col_cyan[]        = "#040405";
 static const char *colors[][3]      = {
 	/*               fg         bg         border   */
 	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
-	[SchemeSel]  = { col_gray4, col_gray1,  col_cyan  },
+	[SchemeSel]  = { col_gray4, col_gray1, col_cyan  },
 };
 
 /* tagging */
@@ -78,6 +78,7 @@ static const Layout layouts[] = {
 };
 
 #include <X11/XF86keysym.h>
+#include "shiftview.c"
 
 /* key definitions */
 #define MODKEY Mod1Mask
@@ -107,7 +108,6 @@ static const char *geany[]    = { "geany", NULL };
 static const char *vbox[]     = { "VirtualBox", NULL };
 static const char *calc[]     = { "galculator", NULL };
 static const char *nbwmon[]   = { "st", "-e", "nbwmon", NULL };
-static const char *nethogs[]  = { "st", "-e", "sudo", "nethogs", "wlo1", NULL };
 static const char *volup[]    = { "amixer", "-q", "set", "Master", "5%+", NULL };
 static const char *voldw[]    = { "amixer", "-q", "set", "Master", "5%-", NULL };
 static const char *volmute[]  = { "amixer", "-q", "set", "Master", "toggle", NULL };
@@ -140,7 +140,6 @@ static Key keys[] = {
 	{ SUPER,                        XK_Up,     spawn,          {.v = volup } },
 	{ MODKEY,                       XK_v,      spawn,          {.v = vbox } },
 	{ MODKEY,                       XK_n,      spawn,          {.v = nbwmon } },
-	{ MODKEY,                       XK_s,      spawn,          {.v = nethogs } },
 	{ MODKEY,                       XK_e,      spawn,          {.v = geany } },
 	{ MODKEY,                       XK_g,      spawn,          {.v = gcolor2 } },
 	{ 0,               XF86XK_Calculator,      spawn,          {.v = calc } },
@@ -160,11 +159,13 @@ static Key keys[] = {
 	{ MODKEY,                       XK_Return, zoom,           {0} },
 	{ MODKEY,                       XK_Tab,    view,           {0} },
 	{ MODKEY|ShiftMask,             XK_c,      killclient,     {0} },
-	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
-	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[1]} },
-	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
-	{ MODKEY|ControlMask,           XK_comma,  cyclelayout,    {.i = -1 } },
-	{ MODKEY|ControlMask,           XK_period, cyclelayout,    {.i = +1 } },
+	{ SUPER,                        XK_1,      setlayout,      {.v = &layouts[0]} },
+	{ SUPER,                        XK_2,      setlayout,      {.v = &layouts[1]} },
+	{ SUPER,                        XK_3,      setlayout,      {.v = &layouts[2]} },
+	{ SUPER,                        XK_4,      setlayout,      {.v = &layouts[3]} },
+	{ SUPER,                        XK_5,      setlayout,      {.v = &layouts[4]} },
+	{ MODKEY,                       XK_Up,     cyclelayout,    {.i = -1 } },
+	{ MODKEY,                       XK_Down,   cyclelayout,    {.i = +1 } },
 	{ MODKEY,                       XK_space,  setlayout,      {0} },
 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
 	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } },
@@ -173,8 +174,8 @@ static Key keys[] = {
 	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
 	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
-	{ MODKEY,                       XK_Left,   viewtoleft,     {0} },
-	{ MODKEY,                       XK_Right,  viewtoright,    {0} },
+	{ MODKEY,                       XK_Left,   shiftview,      {.i = -1 } },
+	{ MODKEY,                       XK_Right,  shiftview,      {.i = +1 } },
 	{ MODKEY|ShiftMask,             XK_Left,   tagtoleft,      {0} },
 	{ MODKEY|ShiftMask,             XK_Right,  tagtoright,     {0} },
 	TAGKEYS(                        XK_1,                      0)
@@ -193,8 +194,8 @@ static Key keys[] = {
 /* click can be ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle, ClkClientWin, or ClkRootWin */
 static Button buttons[] = {
 	/* click                event mask      button          function        argument */
-	{ ClkLtSymbol,          0,              Button1,        setlayout,      {0} },
-	{ ClkLtSymbol,          0,              Button3,        setlayout,      {.v = &layouts[2]} },
+	{ ClkLtSymbol,          0,              Button1,        cyclelayout,    {.i = -1 } },
+	{ ClkLtSymbol,          0,              Button3,        cyclelayout,    {.i = +1 } },
 	{ ClkWinTitle,          0,              Button2,        zoom,           {0} },
 	{ ClkStatusText,        0,              Button2,        spawn,          {.v = termcmd } },
 	{ ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} },
@@ -204,7 +205,7 @@ static Button buttons[] = {
 	{ ClkTagBar,            0,              Button3,        toggleview,     {0} },
 	{ ClkTagBar,            MODKEY,         Button1,        tag,            {0} },
 	{ ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },
-	{ ClkTagBar,            0,              Button4,        viewtoleft,     { .i = -1 } },
-	{ ClkTagBar,            0,              Button5,        viewtoright,    { .i = +1 } },
+	{ ClkTagBar,            0,              Button4,        shiftview,      {.i = -1 } },
+	{ ClkTagBar,            0,              Button5,        shiftview,      {.i = +1 } },
 };
 
